@@ -1,3 +1,4 @@
+<%@page import="model.ModelLogin"%>
 <%@ page language="java" contentType="text/html; charset=ISO-8859-1"
     pageEncoding="ISO-8859-1"%>
  
@@ -46,7 +47,7 @@
                                                     <div class="card-block">
                                                         <h4 class="sub-title">Cad. Usuário</h4>
 		                                              
-          												 <form class="form-material" action="<%= request.getContextPath() %>/ServletUsuarioController" method="post" id="formUser" >
+          												 <form class="form-material" enctype="multipart/form-data" action="<%= request.getContextPath() %>/ServletUsuarioController" method="post" id="formUser" >
           												    
           												    <input type="hidden" name="acao" id="acao" value="">
           												 
@@ -56,7 +57,24 @@
                                                                 <label class="float-label">ID:</label>
                                                             </div>
                                                             
-                                                              <div class="form-group form-default form-static-label">
+                                                             <div class="form-group form-default input-group mb-4">
+                                                                  <div class="input-group-prepend">
+                                                                    <c:if test="${modolLogin.fotouser != '' && modolLogin.fotouser != null}">
+                                                                       <a href="<%= request.getContextPath()%>/ServletUsuarioController?acao=downloadFoto&id=${modolLogin.id}">
+	                                                                     <img alt="Imagem User" id="fotoembase64" src="${modolLogin.fotouser}" width="70px">
+	                                                                    </a>
+                                                                    </c:if>
+                                                                    
+                                                                    <c:if test="${modolLogin.fotouser == '' || modolLogin.fotouser == null}">
+                                                                       <img alt="Imagem User" id="fotoembase64"  src="assets/images/user.png" width="70px">
+                                                        			</c:if>
+                                                        			
+                                                                  </div>
+                                                                  <input type="file" id="fileFoto" name="fileFoto" accept="image/*" onchange="visualizarImg('fotoembase64', 'fileFoto');" class="form-control-file" style="margin-top: 15px; margin-left: 5px;">
+                                                             </div>
+
+
+															<div class="form-group form-default form-static-label">
                                                                 <input type="text" name="nome" id="nome" class="form-control" required="required" value="${modolLogin.nome}">
                                                                 <span class="form-bar"></span>
                                                                 <label class="float-label">Nome:</label>
@@ -68,7 +86,51 @@
                                                                 <label class="float-label">E-mail:</label>
                                                             </div>
                                                             
-                                                           <div class="form-group form-default form-static-label">
+                                                            
+
+															<div class="form-group form-default form-static-label">
+															<select class="form-control"
+																aria-label="Default select example" name="perfil" >
+																<option disabled="disabled" >[Selecione o Perfil]</option>
+																
+																<option value="ADMIN" <% 
+																
+																
+																ModelLogin modelLogin = (ModelLogin) request.getAttribute("modolLogin");
+																
+																
+																if (modelLogin != null && modelLogin.getPerfil().equals("ADMIN")) {
+																		out.print(" ");
+																		 out.print("selected=\"selected\"");
+																		out.print(" ");
+																} %> >Admin</option>
+																
+																<option value="SECRETARIA" <% 
+																		
+																   modelLogin = (ModelLogin) request.getAttribute("modolLogin");
+																		
+																	if (modelLogin != null && modelLogin.getPerfil().equals("SECRETARIA")) {
+																		out.print(" ");
+																		 out.print("selected=\"selected\"");
+																		out.print(" ");
+																	
+																} %>>Secretária</option>
+																
+																<option value="AUXILIAR" <% 
+																	modelLogin = (ModelLogin) request.getAttribute("modolLogin");
+																				
+																	if (modelLogin != null && modelLogin.getPerfil().equals("AUXILIAR")) {
+																		out.print(" ");
+																		 out.print("selected=\"selected\"");
+																		out.print(" ");
+																} %>>Auxiliar</option>
+																
+															</select>
+															<span class="form-bar"></span>
+                                                                <label class="float-label">Perfil:</label>
+															</div>
+
+															<div class="form-group form-default form-static-label">
                                                                 <input type="text" name="login" id="login" class="form-control" required="required" autocomplete="off" value="${modolLogin.login}">
                                                                 <span class="form-bar"></span>
                                                                 <label class="float-label">Login</label>
@@ -80,7 +142,36 @@
                                                                 <label class="float-label">Senha</label>
                                                             </div>
                                                             
-                                                            <button type="button" class="btn btn-primary waves-effect waves-light" onclick="limparForm();" >Novo</button>
+                                                            <div class="form-group form-default form-static-label">
+                                                             <input type="radio" name="sexo" checked="checked" value="MASCULINO"  
+                                                             
+                                                             <%
+                                                            
+                                                             modelLogin = (ModelLogin) request.getAttribute("modolLogin");
+                                                                 
+                                                             if (modelLogin != null && modelLogin.getSexo().equals("MASCULINO")) {
+																	out.print(" ");
+																	 out.print("checked=\"checked\"");
+																	out.print(" ");
+															}
+                                                             
+                                                             %>
+                                                             >Masculino</>
+                                                             
+                                                             <input type="radio" name="sexo" value="FEMININO" <%
+                                                            
+                                                             modelLogin = (ModelLogin) request.getAttribute("modolLogin");
+                                                                 
+                                                             if (modelLogin != null && modelLogin.getSexo().equals("FEMININO")) {
+																	out.print(" ");
+																	 out.print("checked=\"checked\"");
+																	out.print(" ");
+															}
+                                                             
+                                                             %> >Feminino</>
+                                                            </div>
+
+															<button type="button" class="btn btn-primary waves-effect waves-light" onclick="limparForm();" >Novo</button>
 												            <button  class="btn btn-success waves-effect waves-light">Salvar</button>
 												            <button type="button"  class="btn btn-info waves-effect waves-light" onclick="criarDeleteComAjax();" >Excluir</button>
 												            <button type="button" class="btn btn-secondary" data-toggle="modal" data-target="#exampleModalUsuario">Pesquisar</button>
@@ -175,6 +266,25 @@
 
 
 <script type="text/javascript">
+
+function visualizarImg(fotoembase64, filefoto) {
+    
+    
+    var preview = document.getElementById(fotoembase64); // campo IMG html
+    var fileUser = document.getElementById(filefoto).files[0];
+    var reader = new FileReader();
+    
+    reader.onloadend = function (){
+	    preview.src = reader.result; /*Carrega a foto na tela*/
+    };
+    
+    if (fileUser) {
+	  reader.readAsDataURL(fileUser); /*Preview da imagem*/
+    }else {
+	 preview.src=  '';
+    }
+    
+}
 
 
 function verEditar(id) {
