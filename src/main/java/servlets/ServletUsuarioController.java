@@ -104,7 +104,7 @@ public class ServletUsuarioController extends ServletGenericUtil {
 			 if (modelLogin.getFotouser() != null && !modelLogin.getFotouser().isEmpty()) {
 				 
 				 response.setHeader("Content-Disposition", "attachment;filename=arquivo." + modelLogin.getExtensaofotouser());
-				 response.getOutputStream().write(new Base64().decodeBase64(modelLogin.getFotouser().split("\\/")[1]));
+				 response.getOutputStream().write(new Base64().decodeBase64(modelLogin.getFotouser().split("\\,")[1]));
 				 
 			 }
 			 
@@ -176,7 +176,6 @@ public class ServletUsuarioController extends ServletGenericUtil {
 			
 		    modelLogin = daoUsuarioRepository.gravarUsuario(modelLogin, super.getUserLogado(request));
 		}
-		
 		
 		 List<ModelLogin> modelLogins = daoUsuarioRepository.consultaUsuarioList(super.getUserLogado(request));
 	     request.setAttribute("modelLogins", modelLogins);
