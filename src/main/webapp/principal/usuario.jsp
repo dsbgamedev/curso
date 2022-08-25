@@ -1,5 +1,5 @@
 <%@page import="model.ModelLogin"%>
-<%@ page language="java" contentType="text/html; charset=ISO-8859-1"
+<%@ page language="java" contentType="text/html; charset=UTF-8"
     pageEncoding="ISO-8859-1"%>
  
  <%@ taglib uri="http://java.sun.com/jsp/jstl/core" prefix="c"%>   
@@ -131,7 +131,7 @@
 															</div>
 
 															<div class="form-group form-default form-static-label">
-                                                                <input type="text" name="cep" id="cep" class="form-control" required="required" autocomplete="off" value="${modolLogin.cep}">
+                                                                <input onblur="pesquisaCep();" type="text" name="cep" id="cep" class="form-control" required="required" autocomplete="off" value="${modolLogin.cep}">
                                                                 <span class="form-bar"></span>
                                                                 <label class="float-label">Cep</label>
                                                             </div>
@@ -163,7 +163,7 @@
                                                             <div class="form-group form-default form-static-label">
                                                                 <input type="text" name="numero" id="numero" class="form-control" required="required" autocomplete="off" value="${modolLogin.numero}">
                                                                 <span class="form-bar"></span>
-                                                                <label class="float-label">"Numero"</label>
+                                                                <label class="float-label">"Número"</label>
                                                             </div>
 																
 															<div class="form-group form-default form-static-label">
@@ -303,6 +303,23 @@
 
 <script type="text/javascript">
 
+function pesquisaCep() {
+	var cep = $("#cep").val();
+	
+	 $.getJSON("https://viacep.com.br/ws/"+ cep +"/json/?callback=?", function(dados) {
+
+         if (!("erro" in dados)) {
+             //Atualiza os campos com os valores da consulta.
+             $("#cep").val(dados.cep);
+             $("#logradouro").val(dados.logradouro);
+             $("#bairro").val(dados.bairro);
+             $("#localidade").val(dados.localidade);
+             $("#uf").val(dados.uf);
+         } //end if.
+	});	
+}
+
+
 function visualizarImg(fotoembase64, filefoto) {
     
     
@@ -326,8 +343,7 @@ function visualizarImg(fotoembase64, filefoto) {
 function verEditar(id) {
    
     var urlAction = document.getElementById('formUser').action;
-    
-    
+       
     window.location.href = urlAction + '?acao=buscarEditar&id='+id;
     
 }
