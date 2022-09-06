@@ -27,7 +27,6 @@ public class ModelLogin implements Serializable {
 	private String uf;
 	private String numero;
 	
-
 	public String getCep() {
 		return cep;
 	}

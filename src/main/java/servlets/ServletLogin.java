@@ -13,7 +13,7 @@ import jakarta.servlet.http.HttpServletResponse;
 import model.ModelLogin;
 
 
-/*O chamando Controller são as servlets ou ServletLoginController*/
+/*O chamando Controller sï¿½o as servlets ou ServletLoginController*/
 @WebServlet(urlPatterns = {"/principal/ServletLogin", "/ServletLogin"}) /*Mapeamento de URL que vem da tela*/
 public class ServletLogin extends HttpServlet {
 	
@@ -34,7 +34,7 @@ public class ServletLogin extends HttpServlet {
 		 String acao = request.getParameter("acao");
 		 
 		 if (acao != null && !acao.isEmpty() && acao.equalsIgnoreCase("logout")) {
-			 request.getSession().invalidate();// invalida a sessão
+			 request.getSession().invalidate();// invalida a sessï¿½o
 			 RequestDispatcher redirecionar = request.getRequestDispatcher("index.jsp");
 			 redirecionar.forward(request, response);
 		 }else {
@@ -65,6 +65,7 @@ public class ServletLogin extends HttpServlet {
 						
 						request.getSession().setAttribute("usuario", modelLogin.getLogin());
 						request.getSession().setAttribute("perfil", modelLogin.getPerfil());
+						request.getSession().setAttribute("imagemUser", modelLogin.getFotouser());
 						
 						if (url == null || url.equals("null")) {
 							url = "principal/principal.jsp";
