@@ -1,11 +1,14 @@
 package servlets;
 
 import java.io.IOException;
+import java.sql.Date;
+import java.text.SimpleDateFormat;
 import java.util.List;
 
 import org.apache.commons.compress.utils.IOUtils;
 import org.apache.tomcat.util.codec.binary.Base64;
 import org.apache.tomcat.util.http.fileupload.servlet.ServletFileUpload;
+import org.postgresql.jdbc2.optional.SimpleDataSource;
 
 import com.fasterxml.jackson.databind.ObjectMapper;
 
@@ -163,7 +166,7 @@ public class ServletUsuarioController extends ServletGenericUtil {
 
 		try {
 
-			String msg = "Opera��o realizada com sucesso!";
+			String msg = "Operação realizada com sucesso!";
 
 			String id = request.getParameter("id");
 			String nome = request.getParameter("nome");
@@ -178,6 +181,10 @@ public class ServletUsuarioController extends ServletGenericUtil {
 			String localidade = request.getParameter("localidade");
 			String uf = request.getParameter("uf");
 			String numero = request.getParameter("numero");
+			String dataNascimento = request.getParameter("dataNascimento");
+			String rendamensal = request.getParameter("rendamensal");
+			
+			rendamensal = rendamensal.split("\\ ")[1].replaceAll("\\.", "").replaceAll("\\,", ".");
 
 			ModelLogin modelLogin = new ModelLogin();
 
@@ -194,6 +201,8 @@ public class ServletUsuarioController extends ServletGenericUtil {
 			modelLogin.setLocalidade(localidade);
 			modelLogin.setUf(uf);
 			modelLogin.setNumero(numero);
+			modelLogin.setDataNascimento(new Date(new SimpleDateFormat("dd/mm/yyyy").parse(dataNascimento).getTime()));
+			modelLogin.setRendamensal(Double.valueOf(rendamensal));
 
 			if (ServletFileUpload.isMultipartContent(request)) {
 
