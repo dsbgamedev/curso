@@ -90,23 +90,29 @@ public class ServletTelefone extends ServletGenericUtil {
 			String usuario_pai_id = request.getParameter("id");
 			String numero = request.getParameter("numero");
 			
+			
+			if(!daoTelefoneRepository.existeFone(numero, Long.valueOf(usuario_pai_id))) {
+				
+				ModelTelefone modelTelefone = new ModelTelefone();
+				
+				modelTelefone.setNumero(numero);
+				modelTelefone.setUsuario_pai_id(daoUsuarioRepository.consultaUsuarioID(Long.parseLong(usuario_pai_id)));
+				modelTelefone.setUsuario_cad_id(super.getUserLogadoObjt(request));
+				
+				daoTelefoneRepository.gravaTelefone(modelTelefone);
+				request.setAttribute("msg","Salvo com sucesso");
 
-			ModelTelefone modelTelefone = new ModelTelefone();
+			}else {
+				request.setAttribute("msg","Telefone já existe");
+			}
 			
-			modelTelefone.setNumero(numero);
-			modelTelefone.setUsuario_pai_id(daoUsuarioRepository.consultaUsuarioID(Long.parseLong(usuario_pai_id)));
-			modelTelefone.setUsuario_cad_id(super.getUserLogadoObjt(request));
-			
-			daoTelefoneRepository.gravaTelefone(modelTelefone);
-			
-			List<ModelTelefone> modelTelefones = daoTelefoneRepository.listaFone(Long.parseLong(usuario_pai_id));
-			
-			ModelLogin modelLogin = daoUsuarioRepository.consultaUsuarioID(Long.parseLong(usuario_pai_id));
-
-			request.setAttribute("modelLogin", modelLogin);
-			request.setAttribute("modelTelefones", modelTelefones);
-			request.setAttribute("msg", "salvo com sucesso");
-			request.getRequestDispatcher("principal/telefone.jsp").forward(request, response);
+				List<ModelTelefone> modelTelefones = daoTelefoneRepository.listaFone(Long.parseLong(usuario_pai_id));
+				
+				ModelLogin modelLogin = daoUsuarioRepository.consultaUsuarioID(Long.parseLong(usuario_pai_id));
+		
+				request.setAttribute("modelLogin", modelLogin);
+				request.setAttribute("modelTelefones", modelTelefones);
+				request.getRequestDispatcher("principal/telefone.jsp").forward(request, response);
 			
 		} catch (Exception e) {
 			
