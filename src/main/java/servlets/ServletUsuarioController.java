@@ -1,8 +1,10 @@
 package servlets;
 
+import java.io.File;
 import java.io.IOException;
 import java.sql.Date;
 import java.text.SimpleDateFormat;
+import java.util.HashMap;
 import java.util.List;
 
 import org.apache.commons.compress.utils.IOUtils;
@@ -21,6 +23,7 @@ import jakarta.servlet.http.HttpServletRequest;
 import jakarta.servlet.http.HttpServletResponse;
 import jakarta.servlet.http.Part;
 import model.ModelLogin;
+import util.ReportUtil;
 
 @MultipartConfig
 @WebServlet(urlPatterns = { "/ServletUsuarioController" })
@@ -127,10 +130,8 @@ public class ServletUsuarioController extends ServletGenericUtil {
 				ModelLogin modelLogin = daoUsuarioRepository.consultaUsuarioID(idUser, super.getUserLogado(request));
 				if (modelLogin.getFotouser() != null && !modelLogin.getFotouser().isEmpty()) {
 
-					response.setHeader("Content-Disposition",
-							"attachment;filename=arquivo." + modelLogin.getExtensaofotouser());
-					response.getOutputStream()
-							.write(new Base64().decodeBase64(modelLogin.getFotouser().split("\\,")[1]));
+					response.setHeader("Content-Disposition", "attachment;filename=arquivo." + modelLogin.getExtensaofotouser());
+					response.getOutputStream().write(new Base64().decodeBase64(modelLogin.getFotouser().split("\\,")[1]));
 
 				}
 
@@ -145,6 +146,7 @@ public class ServletUsuarioController extends ServletGenericUtil {
 				request.getRequestDispatcher("principal/usuario.jsp").forward(request, response);
 				
 			}else if (acao != null && !acao.isEmpty() && acao.equalsIgnoreCase("imprimirRelatorioUser")) {
+				
 				String dataInicial = request.getParameter("dataInicial");
 				String dataFinal = request.getParameter("dataFinal");
 				
@@ -153,30 +155,58 @@ public class ServletUsuarioController extends ServletGenericUtil {
 					
 					request.setAttribute("listUser", daoUsuarioRepository.consultaUsuarioListRel(super.getUserLogado(request)));
 					
-				}else {
-					request.setAttribute("listUser", daoUsuarioRepository.consultaUsuarioListRel(super.getUserLogado(request), dataInicial, dataFinal));
+			} else {
+				request.setAttribute("listUser", daoUsuarioRepository
+						.consultaUsuarioListRel(super.getUserLogado(request), dataInicial, dataFinal));
 
-				}
+			}
+
+			request.setAttribute("dataInicial", dataInicial);
+			request.setAttribute("dataFinal", dataFinal);
+			request.getRequestDispatcher("principal/reluser.jsp").forward(request, response);
+
+			} else if (acao != null && !acao.isEmpty() && acao.equalsIgnoreCase("imprimirRelatorioPDF")) {
 				
-				request.setAttribute("dataInicial", dataInicial);
-				request.setAttribute("dataFinal", dataFinal);
-				request.getRequestDispatcher("principal/reluser.jsp").forward(request, response);			
-		
+					String dataInicial = request.getParameter("dataInicial");
+					String dataFinal = request.getParameter("dataFinal");
+					
+					List<ModelLogin> modelLogins = null;
+					
+					if(dataInicial == null || dataInicial.isEmpty() 
+							&& dataFinal == null || dataFinal.isEmpty()) {
+						
+					  modelLogins = daoUsuarioRepository.consultaUsuarioListRel(super.getUserLogado(request));	
+						
+					}else {
+						
+						modelLogins = daoUsuarioRepository.consultaUsuarioListRel(super.getUserLogado(request), dataInicial, dataFinal);
+						
+					}
+					
+					HashMap<String, Object> params = new HashMap<String, Object>();
+					params.put("PARAM_SUB_REPORT", request.getServletContext().getRealPath("relatorio") + File.separator);
+					
+					byte[] relatorio = new ReportUtil().geraRelatorioPDF(modelLogins, "rel-user-jsp", params,request.getServletContext());
+					
+					response.setHeader("Content-Disposition", "attachment;filename=arquivo.pdf" );
+					response.getOutputStream().write(relatorio);
+				
+
 			}else {
 				List<ModelLogin> modelLogins = daoUsuarioRepository.consultaUsuarioList(super.getUserLogado(request));
 				request.setAttribute("modelLogins", modelLogins);
 				request.setAttribute("totalPagina", daoUsuarioRepository.totalPagina(this.getUserLogado(request)));
 				request.getRequestDispatcher("principal/usuario.jsp").forward(request, response);
-			}
-
-		} catch (Exception e) {
-			e.printStackTrace();
-			RequestDispatcher redirecionar = request.getRequestDispatcher("erro.jsp");
-			request.setAttribute("msg", e.getMessage());
-			redirecionar.forward(request, response);
+				}
+		
+				} catch (Exception e) {
+					e.printStackTrace();
+					RequestDispatcher redirecionar = request.getRequestDispatcher("erro.jsp");
+					request.setAttribute("msg", e.getMessage());
+					redirecionar.forward(request, response);
+				}
+	
 		}
-
-	}
 
 	protected void doPost(HttpServletRequest request, HttpServletResponse response)
 			throws ServletException, IOException {

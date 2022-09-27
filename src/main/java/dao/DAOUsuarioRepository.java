@@ -158,7 +158,7 @@ public List<ModelLogin> consultaUsuarioListRel(Long userLogado) throws Exception
 		//modelLogin.setSenha(resultado.getString("senha"));
 		modelLogin.setPerfil(resultado.getString("perfil"));
 		modelLogin.setSexo(resultado.getString("sexo"));
-		
+		modelLogin.setDataNascimento(resultado.getDate("datanascimento"));
 		modelLogin.setTelefones(this.listaFone(modelLogin.getId()));
 		
 		retorno.add(modelLogin);
@@ -191,7 +191,7 @@ public List<ModelLogin> consultaUsuarioListRel(Long userLogado,String datainicia
 		//modelLogin.setSenha(resultado.getString("senha"));
 		modelLogin.setPerfil(resultado.getString("perfil"));
 		modelLogin.setSexo(resultado.getString("sexo"));
-		
+		modelLogin.setDataNascimento(resultado.getDate("datanascimento"));
 		modelLogin.setTelefones(this.listaFone(modelLogin.getId()));
 		
 		retorno.add(modelLogin);
