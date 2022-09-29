@@ -14,6 +14,7 @@ import org.postgresql.jdbc2.optional.SimpleDataSource;
 
 import com.fasterxml.jackson.databind.ObjectMapper;
 
+import beandto.BeanDtoGraficoSalarioUser;
 import dao.DAOUsuarioRepository;
 import jakarta.servlet.RequestDispatcher;
 import jakarta.servlet.ServletException;
@@ -165,8 +166,7 @@ public class ServletUsuarioController extends ServletGenericUtil {
 			request.setAttribute("dataFinal", dataFinal);
 			request.getRequestDispatcher("principal/reluser.jsp").forward(request, response);
 
-			} else if (acao != null && !acao.isEmpty() && acao.equalsIgnoreCase("imprimirRelatorioPDF") 
-					|| acao.equalsIgnoreCase("imprimirRelatorioExcel")){
+			} else if (acao != null && !acao.isEmpty() && acao.equalsIgnoreCase("imprimirRelatorioPDF")){
 				
 					String dataInicial = request.getParameter("dataInicial");
 					String dataFinal = request.getParameter("dataFinal");
@@ -187,21 +187,46 @@ public class ServletUsuarioController extends ServletGenericUtil {
 					HashMap<String, Object> params = new HashMap<String, Object>();
 					params.put("PARAM_SUB_REPORT", request.getServletContext().getRealPath("relatorio") + File.separator);
 					
-					byte[] relatorio = null;
-					String extensal = "";
-					
-					if(acao.equalsIgnoreCase("imprimirRelatorioPDF")){
-					  relatorio = new ReportUtil().geraRelatorioPDF(modelLogins, "rel-user-jsp", params,request.getServletContext());
-					  extensal = "pdf";
-					}else 
-						if (acao.equalsIgnoreCase("imprimirRelatorioExcel")){
-						relatorio = new ReportUtil().geraRelatorioExcel(modelLogins, "rel-user-jsp", params,request.getServletContext());
-						extensal = "xls";	
-					}
-										
-					response.setHeader("Content-Disposition", "attachment;filename=arquivo." + extensal );
+					byte[] relatorio = new ReportUtil().geraRelatorioPDF(modelLogins, "rel-user-jsp", params ,request.getServletContext());
+											
+					response.setHeader("Content-Disposition", "attachment;filename=arquivo.pdf" );
 					response.getOutputStream().write(relatorio);
 				
+			}else if (acao != null && !acao.isEmpty() && acao.equalsIgnoreCase("graficoSalario")){
+				
+				String dataInicial = request.getParameter("dataInicial");
+				String dataFinal = request.getParameter("dataFinal");
+				
+				
+				
+				if(dataInicial == null || dataInicial.isEmpty() 
+						&& dataFinal == null || dataFinal.isEmpty()) {
+					
+					BeanDtoGraficoSalarioUser beanDtoGraficoSalarioUser= daoUsuarioRepository
+							.montarGraficoMediaSalario(super.getUserLogado(request));	
+					
+					ObjectMapper mapper = new ObjectMapper();
+
+					String json = mapper.writeValueAsString(beanDtoGraficoSalarioUser);
+					
+					response.getWriter().write(json);
+					
+				}else {
+					BeanDtoGraficoSalarioUser beanDtoGraficoSalarioUser= daoUsuarioRepository
+							.montarGraficoMediaSalario(super.getUserLogado(request), dataInicial, dataFinal);	
+					
+					ObjectMapper mapper = new ObjectMapper();
+
+					String json = mapper.writeValueAsString(beanDtoGraficoSalarioUser);
+					
+					response.getWriter().write(json);
+					
+				
+				}
+				
+			
+				
+			
 			}else {
 				List<ModelLogin> modelLogins = daoUsuarioRepository.consultaUsuarioList(super.getUserLogado(request));
 				request.setAttribute("modelLogins", modelLogins);

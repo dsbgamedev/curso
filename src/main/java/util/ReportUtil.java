@@ -23,28 +23,7 @@ public class ReportUtil implements Serializable {
 	
 	private static final long serialVersionUID = 1L;
 	
-public byte[] geraRelatorioExcel( List listadado, String nomeRelatorio,HashMap<String,Object> params, ServletContext servletContext) throws Exception{
-		
-		/*Cria a lista de dados do nosso SQL da consulta feita*/
-		JRBeanCollectionDataSource jrbcds = new JRBeanCollectionDataSource(listadado);
-		
-		String caminhoJasper = servletContext.getRealPath("relatorio") + File.separator + nomeRelatorio + ".jasper";
-		
-		JasperPrint impressoraJasper = JasperFillManager.fillReport(caminhoJasper,params, jrbcds);
-		
-		JRExporter exporter = new JRXlsExporter();/*Exel*/
-		
-		exporter.setParameter(JRExporterParameter.JASPER_PRINT, impressoraJasper);                  
-		
-		ByteArrayOutputStream baos = new ByteArrayOutputStream();
-		exporter.setParameter(JRExporterParameter.OUTPUT_STREAM, baos);
-		
-		exporter.exportReport();
-		
-		return baos.toByteArray();
-	}
 
-	
 public byte[] geraRelatorioPDF( List listadado, String nomeRelatorio,HashMap<String,Object> params, ServletContext servletContext) throws Exception{
 		
 		/*Cria a lista de dados do nosso SQL da consulta feita*/
@@ -73,3 +52,24 @@ public byte[] geraRelatorioPDF( List listadado, String nomeRelatorio,HashMap<Str
 	}
 
 }
+
+/*public byte[] geraRelatorioExcel( List listadado, String nomeRelatorio,HashMap<String,Object> params, ServletContext servletContext) throws Exception{
+
+Cria a lista de dados do nosso SQL da consulta feita
+JRBeanCollectionDataSource jrbcds = new JRBeanCollectionDataSource(listadado);
+
+String caminhoJasper = servletContext.getRealPath("relatorio") + File.separator + nomeRelatorio + ".jasper";
+
+JasperPrint impressoraJasper = JasperFillManager.fillReport(caminhoJasper,params, jrbcds);
+
+JRExporter exporter = new JRXlsExporter();/Exel/
+
+exporter.setParameter(JRExporterParameter.JASPER_PRINT, impressoraJasper);                  
+
+ByteArrayOutputStream baos = new ByteArrayOutputStream();
+exporter.setParameter(JRExporterParameter.OUTPUT_STREAM, baos);
+
+exporter.exportReport();
+
+return baos.toByteArray();
+}*/
