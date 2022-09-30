@@ -354,9 +354,13 @@ $("#rendamensal").focus();
 
 var dataNascimento = $("#dataNascimento").val();
 
+if(dataNascimento != null && dataNascimento != ''){
+
 var dateFormat = new Date(dataNascimento);
 
 $("#dataNascimento").val(dateFormat.toLocaleDateString('pt-BR',{timeZone: 'UTC'}));
+
+}
 
 $("#nome").focus();
 
@@ -472,7 +476,7 @@ function buscaUserPagAjax(url) {
 }
 
 function buscarUsuario() {
-    
+   
     var nomeBusca = document.getElementById('nomeBusca').value;
     
     if (nomeBusca != null && nomeBusca != '' && nomeBusca.trim() != ''){ /*Validando que tem que ter valor pra buscar no banco*/
@@ -508,7 +512,7 @@ function buscarUsuario() {
 		  }
 		 
 	     }
-	     
+	    
 	 }).fail(function(xhr, status, errorThrown){
 	    alert('Erro ao buscar usuário por nome: ' + xhr.responseText);
 	 });
